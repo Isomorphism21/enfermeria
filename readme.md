@@ -11,5 +11,3 @@ ejercicio2: Obtener las citas de una fecha en específico , donde se ordene los 
 ejercicio3: Obtener todos los médicos de una especialidad en específico (por ejemplo, ‘Cardiología’).
 
 ejercicio4: Encontrar la próxima cita para un paciente en específico (por ejemplo, el paciente con user_id 1).
-
-ejercicio6: Encontrar todas las citas de un día en específico (por ejemplo, ‘2023-02-02').

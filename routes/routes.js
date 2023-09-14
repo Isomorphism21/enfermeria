@@ -82,6 +82,4 @@ router.get("/ejercicio4", async (req, res) => {
     }
 });
 
-
-
 export default router;
