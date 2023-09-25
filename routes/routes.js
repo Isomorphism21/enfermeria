@@ -183,7 +183,113 @@ router.get("/ejercicio8", async (req, res) => {
         client.connect();
         const db = client.db(nombreBase);
         const collection = db.collection("cita");
-        const result = await collection.find({$and:[{cit_medico: medico},{cit_fecha: fecha}]}).toArray();
+        const result = await collection.find({ $and: [{ cit_medico: medico }, { cit_fecha: fecha }] }).toArray();
+        res.json(result);
+        client.close();
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+router.get("/ejercicio9", async (req, res) => {
+    try {
+        const client = new MongoClient(uri);
+        client.connect();
+        const db = client.db(nombreBase);
+        const collection = db.collection("cita");
+        const result = await collection.aggregate([{ $match: { cit_datosUsuario: new ObjectId("6502fb7154d100689c3796d4") } }, {
+            $lookup: {
+                from: "usuario",
+                localField: "cit_datosUsuario",
+                foreignField: "_id",
+                as: "usuarios"
+            },
+        },
+        {
+            $lookup: {
+                from: "medico",
+                localField: "cit_medico",
+                foreignField: "_id",
+                as: "medicos"
+            }
+        },
+        {
+            $lookup: {
+                from: "consultorio",
+                localField: "medicos.med_consultorio",
+                foreignField: "_id",
+                as: "consultorios"
+            }
+        },
+        {
+            $project: {
+                usuarios: 1,
+                consultorios: 1
+            }
+        }
+        ]).toArray();
+        res.json(result);
+        client.close();
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+router.get("/ejercicio10", async (req, res) => {
+    try {
+        const client = new MongoClient(uri);
+        client.connect();
+        const db = client.db(nombreBase);
+        const collection = db.collection("cita");
+        const result = await collection.aggregate([{
+            $match: { cit_estadoCita: new ObjectId("650315a554d100689c37973b") },
+        },
+        {
+            $lookup: {
+                from: "usuario",
+                localField: "cit_datosUsuario",
+                foreignField: "_id",
+                as: "usuarios"
+            }
+        },
+        {
+            $unwind: "$usuarios"
+        },
+        {
+            $match: {
+                "usuarios.usu_genero": new ObjectId("650303f754d100689c3796fd")
+            }
+        },
+        {
+            $project: {
+                usuarios: 1
+            }
+        }
+        ]).toArray();
+        res.json(result);
+        client.close();
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+router.get("/ejercicio12", async (req, res) => {
+    try {
+        const client = new MongoClient(uri);
+        client.connect();
+        const db = client.db(nombreBase);
+        const collection = db.collection("cita");
+        const result = await collection.aggregate([
+            {
+                $match: {
+                    cit_estadoCita: new ObjectId("650315c654d100689c37973e"),
+                    cit_fecha: {
+                        $gte: new Date("2023-11-01T00:00:00Z"),
+                        $lt: new Date("2023-12-01T00:00:00Z")
+                    }
+                }
+            }
+        ]).toArray();
         res.json(result);
         client.close();
     } catch (error) {
